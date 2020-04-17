@@ -199,125 +199,15 @@ module cpu
             
            end
                 
-
-                saver = `NS_GREEN;
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
-            `NS_GREEN: begin
-                light_ns = `LIGHT_GREEN;
-                light_ew = `LIGHT_RED;
-                light_ped = `PED_NS; 
-                timer_en = 1; 
-                timer_load = 0; 
-
-                saver = `NS_YELLOW;
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
-            `NS_YELLOW: begin
-                light_ns = `LIGHT_YELLOW;
-                light_ew = `LIGHT_RED;
-                light_ped = `PED_NS; 
-                timer_en = 1; 
-                timer_load = 0; 
-
-                if (ped)
-                    saver = `PED_2;
-                else
-                    saver = `EW_GREEN;
-                
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
-            `PED_2: begin
-                light_ns = `LIGHT_RED;
-                light_ew = `LIGHT_RED;
-                light_ped = `PED_BOTH; 
-                timer_en = 1; 
-                timer_load = 0; 
-
-                if (car_ns)
-                    if (car_ew)
-                        saver = `EW_GREEN;
-                    else
-                        saver = `NS_GREEN;
-                else
-                    saver = `EW_GREEN;
-                
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
-            `EW_GREEN: begin
-                light_ns = `LIGHT_RED;
-                light_ew = `LIGHT_GREEN;
-                light_ped = `PED_EW; 
-                timer_en = 1; 
-                timer_load = 0; 
-
-                saver = `EW_YELLOW;
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
-            `EW_YELLOW: begin
-                light_ns = `LIGHT_RED;
-                light_ew = `LIGHT_YELLOW;
-                light_ped = `PED_EW; 
-                timer_en = 1; 
-                timer_load = 0; 
-
-                if (ped)
-                    saver = `PED_3;
-                else
-                    saver = `EW_GREEN;
-                    
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
-            `PED_3: begin
-                light_ns = `LIGHT_RED;
-                light_ew = `LIGHT_RED;
-                light_ped = `PED_BOTH; 
-                timer_en = 1; 
-                timer_load = 0; 
-
-                if (car_ew)
-                    if (car_ns)
-                        saver = `NS_GREEN;
-                    else
-                        saver = `EW_GREEN;
-                else
-                    saver = `NS_GREEN;
-                    
-                next_state = `LOADER;
-                
-                // set next value for internal registers
-                // sample_reg_next = 1; 
-            end
             default: begin
-                light_ns = `LIGHT_RED;
-                light_ew = `LIGHT_RED;
-                light_ped = `PED_NEITHER; 
-                timer_en = 0;
-                timer_init = 4'b0000; 
-                timer_load = 0;
-
-                saver = `IDLE; 
-                next_state = `LOADER;
-                
-                // sample_reg_next = 0; 
+                IorD = 0;
+                ALUSrcA = 1'b0;
+                ALUSrcB = 2'b01; 
+                ALUOp = 2'b00; 
+                PCSrc = 2'b00;
+                IRWrite = 1'b1;
+                PCWrite = 1'b1;
+                next_state = `S1;
             end
         endcase
      end
