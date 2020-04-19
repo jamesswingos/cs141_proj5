@@ -15,11 +15,12 @@ module cpu
         output logic [31:0] instr
     );
     
-    // first: wire up the circuit (controls can be 0 for now)
+    // first: wire up the datapath w/o controls
     
     // control variables for the datapath
     logic IorD, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, PCSrc, Branch, PCWrite;
     logic [1:0] ALUSrcB;
+    logic [1:0] ALUOp;
     
     // this will be diff from the book
     logic [3:0] ALUControl;
@@ -86,11 +87,9 @@ module cpu
     logic [31:0] pc_nxt;
     assign pc_nxt = PCSrc ? alu_out : alu_res;
     
-    
     // final register for the PC enabling
     logic [31:0] pc_stage;
     reg_en reg_6 (.clk, .rst, .en(PC_en), .d(pc_nxt), .q(pc_stage));
-    
     
     // multiplex on PC choice
     logic [31:0] address;
@@ -100,17 +99,45 @@ module cpu
     assign mem_addr = address;
     assign w_data = temp4;
     
+    // ALUControl changes based on ALUOp
+    always_ff @(posedge clk, posedge rst) begin
+        if (ALUOp == 2'b00) begin
+            ALUControl <= 4'b0010;
+        end
+        else if (ALUOp == 2'b01) begin
+            ALUControl <= 4'b0110;
+        end
+        else if (ALUOp == 2'b10) begin
+            if (r_data[5:0] == 6'b100000) begin
+                ALUControl <= 4'b0010;
+            end
+            else if (r_data[5:0] == 6'b100010) begin
+                ALUControl <= 4'b0110;
+            end
+            else if (r_data[5:0] == 6'b100100) begin
+                ALUControl <= 4'b0000;
+            end
+            else if (r_data[5:0] == 6'b100101) begin
+                ALUControl <= 4'b0001;
+            end
+            else if (r_data[5:0] == 6'b101010) begin
+                ALUControl <= 4'b0111;
+            end
+            
+            ALUControl <= 4'b0110;
+        end
+     end
+    
      // second: the FSM... design and build the state changes w/ the appr control vals 
      logic [5:0] state, next_state;
      always_ff @(posedge clk, posedge rst) begin
         if (rst) begin
             state <= `S0;
-            // sample_reg <= 0;
         end
         else begin
             state <= next_state;   
         end
-    end
+     end
     
     always_comb begin
         case (state)
@@ -196,7 +223,21 @@ module cpu
                 next_state = `S0;
            end
            `S9: begin
-            
+                ALUSrcA = 1'b1;
+                ALUSrcB = 2'b10;
+                ALUOp = 2'b00;
+                next_state = `S10;
+           end
+           `S10: begin
+                RegDst = 1'b0;
+                MemtoReg = 1'b0;
+                RegWrite = 1'b1;
+                next_state = `S0;
+           end
+           `S11: begin
+                PCSrc = 2'b10;
+                PCWrite = 1'b1;
+                next_state = `S0;
            end
                 
             default: begin

@@ -1,0 +1,15 @@
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/cs141/Desktop/project_5/hdl/alu.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module alu
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/cs141/Desktop/project_5/hdl/cpu.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module cpu
+WARNING: [VRFC 10-3676] redeclaration of ansi port 'w_data' is not allowed [/home/cs141/Desktop/project_5/hdl/cpu.sv:45]
+WARNING: [VRFC 10-3380] identifier 'alu_out' is used before its declaration [/home/cs141/Desktop/project_5/hdl/cpu.sv:46]
+WARNING: [VRFC 10-3380] identifier 'pc_stage' is used before its declaration [/home/cs141/Desktop/project_5/hdl/cpu.sv:57]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:121]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:130]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:154]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:180]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:192]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:200]
+ERROR: [VRFC 10-2989] 'ALUOp' is not declared [/home/cs141/Desktop/project_5/hdl/cpu.sv:219]
+ERROR: [VRFC 10-2865] module 'cpu' ignored due to previous errors [/home/cs141/Desktop/project_5/hdl/cpu.sv:3]
