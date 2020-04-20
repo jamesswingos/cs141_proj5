@@ -16,71 +16,88 @@ module cpu
     );
     
     // first: wire up the datapath w/o controls
-    
+
     // control variables for the datapath
     logic IorD, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, PCSrc, Branch, PCWrite;
     logic [1:0] ALUSrcB;
     logic [1:0] ALUOp;
     
-    // this will be diff from the book
+    // output from ALU decoder
     logic [3:0] ALUControl;
     
-    // temporary shits for now
-    logic [31:0] temp1, temp2, temp3, temp4, temp5, temp6;
+    // intermediary values to save
+        // main datapath
+        logic [31:0] minst, temp2, reg_Asrc, reg_Bsrc, wd3, SrcB;
+        logic [31:0] alu_out;
+        // for sign extension
+        logic [31:0] r_ext;
+        logic [31:0] r_sft;    
+        // ALU results
+        logic [31:0] alu_res;
+        logic zero;    
+        // for branching logic
+        logic b_temp, PC_en;
+        // saved values from instruction
+        logic [4:0] rf_a0, rf_a1, adbg, dest;
+        logic [5:0] funct;
+        logic [5:0] opcode;
+         // outputs of register
+        logic [31:0] rf_r0, rf_r1, rdbg;
+
     
     // save vals for first two reg's
-    reg_en reg_1 (.clk(clk), .rst, .en(IRWrite), .d(r_data), .q(temp1));  
+    reg_en reg_1 (.clk(clk), .rst, .en(IRWrite), .d(r_data), .q(minst));  
     reg_reset reg_2 (.clk, .rst, .d(r_data), .q(temp2));
     
-    logic [4:0] a0, a1, adbg, dest;
-    
+
     // choose which section is the destination (r vs. i/j)
-    assign dest = RegDst ? r_data[15:11] : r_data[20:16];
+    assign dest = RegDst ? minst[15:11] : minst[20:16];
     
-    assign a0 = r_data[25:21];
-    assign a1 = r_data[20:16];
-    
-    logic [31:0] r0, r1, rdbg;
-    
-    // chose b/w ALUOut and memory output (r vs. i/j)
-    logic [31:0] w_data;
-    assign w_data = MemtoReg ? r_data : alu_out;
+    // saving the instruction values
+    assign opcode = minst[31:26];
+    assign funct = minst[5:0];
+    assign rf_a0 = minst[25:21];
+    assign rf_a1 = minst[20:16];
+        
+    // choose b/w ALUOut and memory output (r vs. i/j)
+    assign wd3 = MemtoReg ? temp2 : alu_out;
     
     // interact w/ register file
-    reg_file reg_main (.clk, .wr_en(RegWrite), .w_addr(dest), .r0_addr(a0), .r1_addr(a1), .w_data, .r0_data(r0), .r1_data(r1), .rbdg_addr(adbg), .rbdg_data(rdbg));
+    reg_file reg_main (.clk, .wr_en, .w_addr(dest), .r0_addr(rf_a0),
+                       .r1_addr(rf_a1), .w_data(wd3), .r0_data(rf_r0),
+                       .r1_data(rf_r1), .rdbg_addr(adbg), .rdbg_data(rdbg));
     
-    // build results from FF following register file
-    reg_reset reg_3 (.clk, .rst, .d(r0), .q(temp3));
-    reg_reset reg_4 (.clk, .rst, .d(r1), .q(temp4));
+    // build results from FFs following register file
+    reg_reset reg_A (.clk, .rst, .d(rf_r0), .q(reg_Asrc));
+    reg_reset reg_B (.clk, .rst, .d(rf_r1), .q(reg_Bsrc));
     
-    // define ALU SrcA
+    // multiplex for ALU SrcA
+    logic [31:0] pc_stage;
     logic [31:0] SrcA;
-    assign SrcA = ALUSrcA ? temp3 : pc_stage;
+    assign SrcA = ALUSrcA ? reg_Asrc : pc_stage;
     
     // sign extend
-    logic [31:0] r_ext ;
-    assign r_ext = r_data[15] ? {16'b1111111111111111, r_data[15:0]} : {16'b0000000000000000, r_data[15:0]};
+    assign r_ext = minst[15] ? {16'b1111111111111111, minst[15:0]} : {16'b0000000000000000, minst[15:0]};
     
     // shift extension 2 spots
-    logic [31:0] r_sft;
     assign r_sft = r_ext << 2;
     
-    // build srcb multiplexer
-    logic [31:0] SrcB;
-    assign SrcB = ALUSrcB[1] ? (ALUSrcB[0] ? r_sft : r_ext) : (ALUSrcB[0] ? 32'b100 : temp4);
+    // SrcB multiplexer and save w_data
+    assign w_data = reg_Bsrc;
+    assign SrcB = ALUSrcB[1] ? (ALUSrcB[0] ? r_sft : r_ext) : (ALUSrcB[0] ? 32'b100 : reg_Bsrc);
 
+    // run the controller
+    main_decoder main_decoder_unit (.*); // assign values to muxers and enablers
+    alu_decoder alu_decoder_unit (.*); // get the ALUControl signal
+    
     // interact with the ALU (adjust op codes for larger inst set)
-    logic [31:0] alu_res;
-    logic zero;
     alu alu_main (.x(SrcA), .y(SrcB), .op(ALUControl), .z(alu_res), .zero);
     
     // control zero and branching
-    logic b_temp, PC_en;
     assign b_temp = zero && Branch;
     assign PC_en = b_temp || PCWrite;
     
     // another reg for ALU output
-    logic [31:0] alu_out;
     reg_reset reg_5 (.clk, .rst, .d(alu_res), .q(alu_out));
     
     // multiplex on ALU result
@@ -88,172 +105,11 @@ module cpu
     assign pc_nxt = PCSrc ? alu_out : alu_res;
     
     // final register for the PC enabling
-    logic [31:0] pc_stage;
     reg_en reg_6 (.clk, .rst, .en(PC_en), .d(pc_nxt), .q(pc_stage));
     
     // multiplex on PC choice
-    logic [31:0] address;
-    assign address = IorD ? alu_out : pc_stage;
+    assign mem_addr = IorD ? alu_out : pc_stage;
     
-    // save outputs for memory interface
-    assign mem_addr = address;
-    assign w_data = temp4;
-    
-    // ALUControl changes based on ALUOp
-    always_ff @(posedge clk, posedge rst) begin
-        if (ALUOp == 2'b00) begin
-            ALUControl <= 4'b0010;
-        end
-        else if (ALUOp == 2'b01) begin
-            ALUControl <= 4'b0110;
-        end
-        else if (ALUOp == 2'b10) begin
-            if (r_data[5:0] == 6'b100000) begin
-                ALUControl <= 4'b0010;
-            end
-            else if (r_data[5:0] == 6'b100010) begin
-                ALUControl <= 4'b0110;
-            end
-            else if (r_data[5:0] == 6'b100100) begin
-                ALUControl <= 4'b0000;
-            end
-            else if (r_data[5:0] == 6'b100101) begin
-                ALUControl <= 4'b0001;
-            end
-            else if (r_data[5:0] == 6'b101010) begin
-                ALUControl <= 4'b0111;
-            end
-            
-            ALUControl <= 4'b0110;
-        end
-     end
-    
-     // second: the FSM... design and build the state changes w/ the appr control vals 
-     logic [5:0] state, next_state;
-     always_ff @(posedge clk, posedge rst) begin
-        if (rst) begin
-            state <= `S0;
-        end
-        else begin
-            state <= next_state;   
-        end
-     end
-    
-    always_comb begin
-        case (state)
-            `S0: begin
-                // set new controls
-                IorD = 0;
-                ALUSrcA = 1'b0;
-                ALUSrcB = 2'b01; 
-                ALUOp = 2'b00; 
-                PCSrc = 2'b00;
-                IRWrite = 1'b1;
-                PCWrite = 1'b1;
-                next_state = `S1;
-            end
-            `S1: begin
-                ALUSrcA = 1'b0;
-                ALUSrcB = 2'b11;
-                ALUOp = 2'b00;
-                if (r_data[31:26] == `OP_RTYPE) begin
-                    next_state = `S6;
-                end
-                else 
-                    if (r_data[31:26] == (`OP_LW || `OP_SW)) begin
-                        next_state = `S2;
-                    end
-                    else 
-                        if (r_data[31:26] == `OP_BEQ) begin
-                            next_state = `S8;
-                        end
-                        else
-                            if (r_data[31:26] == `OP_ADDI) begin
-                                next_state = `S9;
-                            end
-                            else
-                                if (r_data[31:26] == `OP_J) begin
-                                    next_state = `S11;
-                                end
-           end                
-           `S2: begin
-                ALUSrcA = 1'b1;
-                ALUSrcB = 2'b10;
-                ALUOp = 2'b11;
-                if (r_data[31:26] == `OP_LW) begin
-                    next_state = `S3;
-                end
-                else
-                    if (r_data[31:25] == `OP_SW) begin
-                        next_state = `S5;
-                    end
-           end
-           `S3: begin
-                IorD = 1'b1;
-                next_state = `S4;
-           end
-           `S4: begin
-                RegDst = 1'b0;
-                MemtoReg = 1'b1;
-                RegWrite = 1'b1;
-           end
-           `S5: begin
-                IorD = 1'b1;
-                wr_en = 1'b1;
-                next_state = `S0;
-           end
-           `S6: begin
-                ALUSrcA = 1'b1;
-                ALUSrcB = 2'b00;
-                ALUOp = 2'b10;
-                next_state = `S7;
-           end
-           `S7: begin
-                RegDst = 1'b1;
-                MemtoReg = 1'b0;
-                RegWrite = 1'b1;
-                next_state = `S0;
-           end
-           `S8: begin
-                ALUSrcA = 1'b1;
-                ALUSrcB = 2'b00;
-                ALUOp = 2'b01;
-                PCSrc = 2'b01;
-                Branch = 1'b1;
-                next_state = `S0;
-           end
-           `S9: begin
-                ALUSrcA = 1'b1;
-                ALUSrcB = 2'b10;
-                ALUOp = 2'b00;
-                next_state = `S10;
-           end
-           `S10: begin
-                RegDst = 1'b0;
-                MemtoReg = 1'b0;
-                RegWrite = 1'b1;
-                next_state = `S0;
-           end
-           `S11: begin
-                PCSrc = 2'b10;
-                PCWrite = 1'b1;
-                next_state = `S0;
-           end
-                
-            default: begin
-                IorD = 0;
-                ALUSrcA = 1'b0;
-                ALUSrcB = 2'b01; 
-                ALUOp = 2'b00; 
-                PCSrc = 2'b00;
-                IRWrite = 1'b1;
-                PCWrite = 1'b1;
-                next_state = `S1;
-            end
-        endcase
-     end
-    
-
     // The CPU interfaces with main memory which is enabled by the
     // inputs and outputs of this module (r_data, wr_en, mem_addr, w_data)
     // You should create the register file, flip flops, and logic implementing

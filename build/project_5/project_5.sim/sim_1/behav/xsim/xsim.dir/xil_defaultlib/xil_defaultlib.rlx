@@ -1,0 +1,15 @@
+0.6
+2019.1
+May 24 2019
+14:51:52
+/home/cs141/Desktop/project_5/build/project_5/project_5.sim/sim_1/behav/xsim/glbl.v,1558713910,verilog,,,,glbl,,,,,,,,
+/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/alu_decoder.sv,1587343259,systemVerilog,,/home/cs141/Desktop/project_5/hdl/cpu.sv,,alu_decoder,,,,,,,,
+/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/main_decoder.sv,1587343519,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_en.sv,,main_decoder,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/alu.sv,1584992066,systemVerilog,,/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/alu_decoder.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,alu,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/cpu.sv,1587343349,systemVerilog,,/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/main_decoder.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,cpu,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/cpu.svh,1586998402,verilog,,,,,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/cpu_tb.sv,1585951170,systemVerilog,,,,cpu_tb,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/reg_en.sv,1585949862,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_file.sv,,reg_en,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/reg_file.sv,1584992066,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_reset.sv,,reg_file,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/reg_reset.sv,1585949970,systemVerilog,,/home/cs141/Desktop/project_5/hdl/rw_ram.sv,,reg_reset,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/rw_ram.sv,1586987667,systemVerilog,,/home/cs141/Desktop/project_5/hdl/cpu_tb.sv,,rw_ram,,,,,,,,

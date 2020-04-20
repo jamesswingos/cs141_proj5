@@ -1,7 +1,9 @@
 # compile verilog/system verilog design source files
 sv xil_defaultlib  \
 "../../../../../../hdl/alu.sv" \
+"../../../../project_5.srcs/sources_1/new/alu_decoder.sv" \
 "../../../../../../hdl/cpu.sv" \
+"../../../../project_5.srcs/sources_1/new/main_decoder.sv" \
 "../../../../../../hdl/reg_en.sv" \
 "../../../../../../hdl/reg_file.sv" \
 "../../../../../../hdl/reg_reset.sv" \
