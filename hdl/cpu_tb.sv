@@ -23,7 +23,7 @@ module cpu_tb();
     logic [31:0] instr;
     logic [31:0] rdbg_addr;
     logic [31:0] rdbg_data;
-
+    
     rw_ram ram_unit (.*, .addr(mem_addr), .rdbg_data(mem_rdbg_data));
     cpu cpu_unit (.*);
 

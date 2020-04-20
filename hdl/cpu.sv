@@ -16,7 +16,6 @@ module cpu
     );
     
     // first: wire up the datapath w/o controls
-
     // control variables for the datapath
     logic IorD, IRWrite, RegDst, MemtoReg, RegWrite, ALUSrcA, PCSrc, Branch, PCWrite;
     logic [1:0] ALUSrcB;
@@ -41,16 +40,19 @@ module cpu
         logic [4:0] rf_a0, rf_a1, adbg, dest;
         logic [5:0] funct;
         logic [5:0] opcode;
-         // outputs of register
+         // outputs of register file
         logic [31:0] rf_r0, rf_r1, rdbg;
+        
+        // source A temps
+        logic [31:0] pc_stage;
+        logic [31:0] SrcA;
 
     
     // save vals for first two reg's
-    reg_en reg_1 (.clk(clk), .rst, .en(IRWrite), .d(r_data), .q(minst));  
+    reg_en reg_1 (.clk, .rst, .en(IRWrite), .d(r_data), .q(minst));  
     reg_reset reg_2 (.clk, .rst, .d(r_data), .q(temp2));
     
-
-    // choose which section is the destination (r vs. i/j)
+    // choose which reg to save result to (r vs. i/j)
     assign dest = RegDst ? minst[15:11] : minst[20:16];
     
     // saving the instruction values
@@ -72,8 +74,6 @@ module cpu
     reg_reset reg_B (.clk, .rst, .d(rf_r1), .q(reg_Bsrc));
     
     // multiplex for ALU SrcA
-    logic [31:0] pc_stage;
-    logic [31:0] SrcA;
     assign SrcA = ALUSrcA ? reg_Asrc : pc_stage;
     
     // sign extend
@@ -108,7 +108,11 @@ module cpu
     reg_en reg_6 (.clk, .rst, .en(PC_en), .d(pc_nxt), .q(pc_stage));
     
     // multiplex on PC choice
-    assign mem_addr = IorD ? alu_out : pc_stage;
+    logic [31:0] mem_fin;
+    assign mem_fin = IorD ? alu_out : pc_stage;
+    logic [31:0] pc_fin;
+    assign pc_fin = pc_stage + 32'h400000;
+    assign mem_addr = IorD ? mem_fin : pc_fin;
     
     // The CPU interfaces with main memory which is enabled by the
     // inputs and outputs of this module (r_data, wr_en, mem_addr, w_data)
