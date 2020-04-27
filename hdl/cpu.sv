@@ -47,10 +47,20 @@ module cpu
         logic [31:0] pc_stage;
         logic [31:0] SrcA;
 
+    // run the controller
+    main_decoder main_decoder_unit (.*); // assign values to muxers and enablers
+    alu_decoder alu_decoder_unit (.*); // get the ALUControl signal
+    
+    // final register for the PC enabling
+    reg_en #(.INIT(32'h400000)) reg_6 (.*, .en(PC_en), .d(pc_nxt), .q(pc_stage));
+    
+    // multiplex on PC choice
+    logic [31:0] mem_fin;
+    assign mem_addr = IorD ? alu_out : pc_stage;
     
     // save vals for first two reg's
-    reg_en reg_1 (.clk, .rst, .en(IRWrite), .d(r_data), .q(minst));  
-    reg_reset reg_2 (.clk, .rst, .d(r_data), .q(temp2));
+    reg_en reg_1 (.*, .en(IRWrite), .d(r_data), .q(minst));  
+    reg_reset reg_2 (.*, .d(r_data), .q(temp2));
     
     // choose which reg to save result to (r vs. i/j)
     assign dest = RegDst ? minst[15:11] : minst[20:16];
@@ -86,9 +96,6 @@ module cpu
     assign w_data = reg_Bsrc;
     assign SrcB = ALUSrcB[1] ? (ALUSrcB[0] ? r_sft : r_ext) : (ALUSrcB[0] ? 32'b100 : reg_Bsrc);
 
-    // run the controller
-    main_decoder main_decoder_unit (.*); // assign values to muxers and enablers
-    alu_decoder alu_decoder_unit (.*); // get the ALUControl signal
     
     // interact with the ALU (adjust op codes for larger inst set)
     alu alu_main (.x(SrcA), .y(SrcB), .op(ALUControl), .z(alu_res), .zero);
@@ -98,22 +105,14 @@ module cpu
     assign PC_en = b_temp || PCWrite;
     
     // another reg for ALU output
-    reg_reset reg_5 (.clk, .rst, .d(alu_res), .q(alu_out));
+    reg_reset reg_5 (.*, .d(alu_res), .q(alu_out));
     
     // multiplex on ALU result
     logic [31:0] pc_nxt;
     assign pc_nxt = PCSrc ? alu_out : alu_res;
     
-    // final register for the PC enabling
-    reg_en reg_6 (.clk, .rst, .en(PC_en), .d(pc_nxt), .q(pc_stage));
     
-    // multiplex on PC choice
-    logic [31:0] mem_fin;
-    assign mem_fin = IorD ? alu_out : pc_stage;
-    logic [31:0] pc_fin;
-    assign pc_fin = pc_stage + 32'h400000;
-    assign mem_addr = IorD ? mem_fin : pc_fin;
-    
+ 
     // The CPU interfaces with main memory which is enabled by the
     // inputs and outputs of this module (r_data, wr_en, mem_addr, w_data)
     // You should create the register file, flip flops, and logic implementing

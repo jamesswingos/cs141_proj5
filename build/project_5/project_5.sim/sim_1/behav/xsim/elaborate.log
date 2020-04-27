@@ -10,11 +10,12 @@ WARNING: [XSIM 43-4100] "/home/cs141/Desktop/project_5/build/project_5/project_5
 Completed simulation data flow analysis
 Time Resolution for simulation is 1ps
 Compiling module xil_defaultlib.rw_ram
+Compiling module xil_defaultlib.main_decoder
+Compiling module xil_defaultlib.alu_decoder
+Compiling module xil_defaultlib.reg_en(INIT=32'b0100000000000000...
 Compiling module xil_defaultlib.reg_en
 Compiling module xil_defaultlib.reg_reset
 Compiling module xil_defaultlib.reg_file
-Compiling module xil_defaultlib.main_decoder
-Compiling module xil_defaultlib.alu_decoder
 Compiling module xil_defaultlib.alu
 Compiling module xil_defaultlib.cpu
 Compiling module xil_defaultlib.cpu_tb

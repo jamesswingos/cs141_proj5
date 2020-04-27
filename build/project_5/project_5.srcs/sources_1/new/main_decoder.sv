@@ -26,10 +26,12 @@ module main_decoder(
      end
     
     always_comb begin
-        case (state)
+        next_state = state;
+        unique case (state)
             `S0: begin
                 // set new controls
                 IorD = 0;
+                RegDst = 1'b1;
                 ALUSrcA = 1'b0;
                 ALUSrcB = 2'b01; 
                 ALUOp = 2'b00; 
@@ -82,6 +84,7 @@ module main_decoder(
                 ALUSrcB = 2'b00;
                 ALUOp = 2'b10;
                 next_state = `S7;
+                RegDst = 1'b1;
            end
            `S7: begin
                 RegDst = 1'b1;
