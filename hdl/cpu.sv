@@ -48,7 +48,7 @@ module cpu
         logic [31:0] SrcA;
 
     // run the controller
-    main_decoder main_decoder_unit (.*); // assign values to muxers and enablers
+    main_decoder main_decoder_unit (.*, .MemWrite(wr_en)); // assign values to muxers and enablers
     alu_decoder alu_decoder_unit (.*); // get the ALUControl signal
     
     // final register for the PC enabling
@@ -75,7 +75,7 @@ module cpu
     assign wd3 = MemtoReg ? temp2 : alu_out;
     
     // interact w/ register file
-    reg_file reg_main (.clk, .wr_en, .w_addr(dest), .r0_addr(rf_a0),
+    reg_file reg_main (.clk, .wr_en(RegWrite), .w_addr(dest), .r0_addr(rf_a0),
                        .r1_addr(rf_a1), .w_data(wd3), .r0_data(rf_r0),
                        .r1_data(rf_r1), .rdbg_addr(adbg), .rdbg_data(rdbg));
     
@@ -96,7 +96,6 @@ module cpu
     assign w_data = reg_Bsrc;
     assign SrcB = ALUSrcB[1] ? (ALUSrcB[0] ? r_sft : r_ext) : (ALUSrcB[0] ? 32'b100 : reg_Bsrc);
 
-    
     // interact with the ALU (adjust op codes for larger inst set)
     alu alu_main (.x(SrcA), .y(SrcB), .op(ALUControl), .z(alu_res), .zero);
     

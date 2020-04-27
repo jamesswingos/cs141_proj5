@@ -4,7 +4,7 @@ module main_decoder(
     input [5:0] funct,
     
     // enabling registers
-    output logic IRWrite, RegWrite, wr_en,
+    output logic IRWrite, RegWrite, MemWrite,
     
     // pc enabling
     output logic Branch, PCWrite,
@@ -76,7 +76,7 @@ module main_decoder(
            end
            `S5: begin
                 IorD = 1'b1;
-                wr_en = 1'b1;
+                MemWrite = 1'b1;
                 next_state = `S0;
            end
            `S6: begin
@@ -120,7 +120,7 @@ module main_decoder(
                 
             default: begin
                 IorD = 0;
-                wr_en = 0;
+                MemWrite = 0;
                 ALUSrcA = 1'b0;
                 ALUSrcB = 2'b01; 
                 ALUOp = 2'b00; 
