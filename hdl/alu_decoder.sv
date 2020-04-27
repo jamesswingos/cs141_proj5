@@ -1,4 +1,4 @@
-//`include "cpu.svh"
+`include "cpu.svh"
 
 module alu_decoder(
     input logic [1:0] ALUOp,

@@ -3,12 +3,12 @@
 May 24 2019
 14:51:52
 /home/cs141/Desktop/project_5/build/project_5/project_5.sim/sim_1/behav/xsim/glbl.v,1558713910,verilog,,,,glbl,,,,,,,,
-/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/alu_decoder.sv,1587343767,systemVerilog,,/home/cs141/Desktop/project_5/hdl/cpu.sv,,alu_decoder,,,,,,,,
-/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/main_decoder.sv,1588010543,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_en.sv,,main_decoder,,,,,,,,
-/home/cs141/Desktop/project_5/hdl/alu.sv,1584992066,systemVerilog,,/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/alu_decoder.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,alu,,,,,,,,
-/home/cs141/Desktop/project_5/hdl/cpu.sv,1588010566,systemVerilog,,/home/cs141/Desktop/project_5/build/project_5/project_5.srcs/sources_1/new/main_decoder.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,cpu,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/alu.sv,1584992066,systemVerilog,,/home/cs141/Desktop/project_5/hdl/alu_decoder.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,alu,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/alu_decoder.sv,1588019918,systemVerilog,,/home/cs141/Desktop/project_5/hdl/cpu.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,alu_decoder,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/cpu.sv,1588010566,systemVerilog,,/home/cs141/Desktop/project_5/hdl/main_decoder.sv,/home/cs141/Desktop/project_5/hdl/cpu.svh,cpu,,,,,,,,
 /home/cs141/Desktop/project_5/hdl/cpu.svh,1586998402,verilog,,,,,,,,,,,,
 /home/cs141/Desktop/project_5/hdl/cpu_tb.sv,1587353949,systemVerilog,,,,cpu_tb,,,,,,,,
+/home/cs141/Desktop/project_5/hdl/main_decoder.sv,1588010543,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_en.sv,,main_decoder,,,,,,,,
 /home/cs141/Desktop/project_5/hdl/reg_en.sv,1585949862,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_file.sv,,reg_en,,,,,,,,
 /home/cs141/Desktop/project_5/hdl/reg_file.sv,1584992066,systemVerilog,,/home/cs141/Desktop/project_5/hdl/reg_reset.sv,,reg_file,,,,,,,,
 /home/cs141/Desktop/project_5/hdl/reg_reset.sv,1585949970,systemVerilog,,/home/cs141/Desktop/project_5/hdl/rw_ram.sv,,reg_reset,,,,,,,,
